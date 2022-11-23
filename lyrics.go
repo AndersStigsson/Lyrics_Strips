@@ -6,8 +6,7 @@ import (
 	"net/http"
 )
 
-func getLyrics(accessToken string) {
-	track_id := "5f8eCNwTlr0RJopE9vQ6mB"
+func (sp *SpotifyData) getLyrics(track_id string) {
 	url := fmt.Sprintf("https://spclient.wg.spotify.com/color-lyrics/v2/track/%s?format=json&market=from_token", track_id)
 	method := "GET"
 
@@ -19,7 +18,7 @@ func getLyrics(accessToken string) {
 	}
 	req.Header.Add("App-platform", "WebPlayer")
 	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", sp.AccessToken))
 
 	res, err := client.Do(req)
 	if err != nil {
