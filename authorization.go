@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -16,7 +18,12 @@ const (
 
 var AccessToken string
 
-func (sp *SpotifyData) getAccessToken() {
+type AccessData struct {
+	AccessToken string `json:"accessToken"`
+	Expires     int    `json:"accessTokenExpirationTimestampMs"`
+}
+
+func (sp *SpotifyData) getAccessToken() *AccessData {
 	url := "https://open.spotify.com"
 	method := http.MethodGet
 
@@ -24,7 +31,7 @@ func (sp *SpotifyData) getAccessToken() {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil
 	}
 
 	cookie := &http.Cookie{
@@ -36,21 +43,27 @@ func (sp *SpotifyData) getAccessToken() {
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil
 	}
-	// Get the access_token value within
-	// <script id="session" data-testid="session" type="application/json">
-	fmt.Println(string(body))
+	r := regexp.MustCompile(`<script id="session" data-testid="session" type="application/json">(\S+)</script>`)
+	searchBody := string(body)
+	match := r.FindStringSubmatch(searchBody)
+	var data AccessData
+	err = json.Unmarshal([]byte(match[1]), &data)
+	if err != nil {
+		panic(err.Error())
+	}
+	return &data
 }
 
-func getClientCredentialsLogin(client_id string, client_secret string) {
+func (sp *SpotifyData) getClientCredentialsLogin() *TokenData {
 	url := fmt.Sprintf("%s://%s/api/token", DEFAULT_SCHEME, DEFAULT_HOST)
 	// url := "https://accounts.spotify.com/api/token"
 	method := http.MethodPost
@@ -60,25 +73,32 @@ func getClientCredentialsLogin(client_id string, client_secret string) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, payload)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(err.Error())
+		return nil
 	}
 
-	authBearer := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", client_id, client_secret)))
+	authString := fmt.Sprintf("%s:%s", sp.ClientId, sp.ClientSecret)
+	authBearer := base64.StdEncoding.EncodeToString([]byte(authString))
 	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", authBearer))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(err.Error())
+		return nil
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(err.Error())
+		return nil
 	}
-	fmt.Println(string(body))
+	var tempData TokenData
+	err = json.Unmarshal(body, &tempData)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+	return &tempData
 }
