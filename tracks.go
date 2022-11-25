@@ -1,13 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-func (sp *SpotifyData) getTrackId() *string {
-	url := "https://api.spotify.com/v1/recommendations?seed_genres=punk&limit=1&min_popularity=75"
+type Tracks struct {
+	Id     string       `json:"id"`
+	Name   string       `json:"name"`
+	Album  AlbumData    `json:"album"`
+	Artist []ArtistData `json:"artists"`
+}
+
+type TrackData struct {
+	Tracks []Tracks `json:"tracks"`
+}
+
+func (sp *SpotifyData) getTrackId() *TrackData {
+	url := "https://api.spotify.com/v1/recommendations?seed_genres=swedish&limit=10&min_popularity=33"
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -26,7 +38,15 @@ func (sp *SpotifyData) getTrackId() *string {
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err.Error())
+	}
 
-	fmt.Println(string(body))
-	return nil
+	var data TrackData
+	err = json.Unmarshal(body, &data)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	return &data
 }
