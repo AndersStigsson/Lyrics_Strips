@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 const (
@@ -20,7 +21,8 @@ var AccessToken string
 
 type AccessData struct {
 	AccessToken string `json:"accessToken"`
-	Expires     int    `json:"accessTokenExpirationTimestampMs"`
+	ExpiresIn   int    `json:"accessTokenExpirationTimestampMs"`
+	Expires     time.Time
 }
 
 func (sp *SpotifyData) getAccessToken() *AccessData {
@@ -60,6 +62,7 @@ func (sp *SpotifyData) getAccessToken() *AccessData {
 	if err != nil {
 		panic(err.Error())
 	}
+	data.Expires = time.Now().Add(time.Second * time.Duration(data.ExpiresIn))
 	return &data
 }
 
