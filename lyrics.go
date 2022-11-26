@@ -9,6 +9,7 @@ import (
 
 type LyricsLines struct {
 	Words string `json:"words"`
+	Time  string `json:"startTimeMs"`
 }
 
 type Lyrics struct {
