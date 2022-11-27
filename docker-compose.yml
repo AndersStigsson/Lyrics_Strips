@@ -1,0 +1,12 @@
+version: "3"
+services:
+  frontend:
+    build:
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "10006:10006"
+  backend:
+    build:
+      dockerfile: backend.Dockerfile
+    ports:
+      - "10011:10011"
