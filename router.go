@@ -36,19 +36,12 @@ func validateRequest(next http.HandlerFunc) http.HandlerFunc {
 
 func getNextTrack(w http.ResponseWriter, r *http.Request) {
 	trackData := client.getTrackId()
-	fmt.Println(client.UserToken.AccessToken)
 
 	numberOfSongs := len(trackData.Tracks)
 	songNumber := rand.Intn(numberOfSongs)
 	lyrics := client.getLyrics(trackData.Tracks[songNumber].Id)
 	lineNumber := rand.Intn(len(lyrics.Lyrics.Lines))
 	lineOfText := lyrics.Lyrics.Lines[lineNumber]
-	// url := "https://api.spotify.com/v1/recommendations?seed_genres=swedish&seed_artists=3uFum0NCM1PtmCO0MwsOAt&limit=10&min_popularity=33"
-
-	// webClient := &http.Client{}
-
-	// payload := strings.NewReader("grant_type=client_credentials")
-	// req, err := http.NewRequest(http.MethodPut, url, nil)
 
 	for {
 		if len(strings.Split(lineOfText.Words, " ")) > 2 {
