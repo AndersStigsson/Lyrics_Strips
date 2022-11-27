@@ -8,7 +8,7 @@ let line = ref('');
 let trackInfo = ref({});
 let state = reactive({guessing: true});
 
-const URL = 'http://localhost:10010/next';
+const URL = `${import.meta.env.VITE_BACKEND_HOST}/next`;
 let resp = await axios.get(URL);
 trackInfo = ref(resp.data.track);
 let lines = ref(resp.data.lines);
