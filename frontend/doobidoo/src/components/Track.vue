@@ -11,7 +11,8 @@ let state = reactive({guessing: true});
 const URL = 'http://localhost:10010/next';
 let resp = await axios.get(URL);
 trackInfo = ref(resp.data.track);
-line = ref(resp.data.line.words)
+let lines = ref(resp.data.lines);
+let lineNumber = ref(resp.data.lineNumber);
 
 const clickedLine = () => {
     state.guessing = !state.guessing;
@@ -20,8 +21,9 @@ const clickedLine = () => {
 const nextSong = async () => {
     resp = await axios.get(URL)
     trackInfo = resp.data.track;
-    line = resp.data.line.words
-    
+    lines = resp.data.lines;
+    lineNumber = resp.data.lineNumber;
+    line = lines[lineNumber].words;
     clickedLine();
 }
 
@@ -31,14 +33,14 @@ const nextSong = async () => {
     <div>
         <Line 
             v-if="state.guessing"
-            :line="line"
-            @click="clickedLine"
+            :lines="lines"
+            :line-number="lineNumber"
+            @guess="clickedLine"
         />
         <TrackInfo
             v-else
             :trackInfo="trackInfo"
             @click="nextSong"
         />
-        {{ guessing }}
     </div>
 </template>

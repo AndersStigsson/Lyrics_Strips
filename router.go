@@ -58,13 +58,15 @@ func getNextTrack(w http.ResponseWriter, r *http.Request) {
 		lineOfText = lyrics.Lyrics.Lines[lineNumber]
 	}
 	type ReturnData struct {
-		Line  LyricsLines `json:"line"`
-		Track Tracks      `json:"track"`
+		LineNumber int           `json:"lineNumber"`
+		Lines      []LyricsLines `json:"lines"`
+		Track      Tracks        `json:"track"`
 	}
 
 	var returnData ReturnData
-	returnData.Line = lineOfText
+	returnData.Lines = lyrics.Lyrics.Lines
 	returnData.Track = trackData.Tracks[songNumber]
+	returnData.LineNumber = lineNumber
 
 	json.NewEncoder(w).Encode(returnData)
 }
