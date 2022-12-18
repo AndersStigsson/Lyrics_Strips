@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -45,5 +46,6 @@ func main() {
 	clientInfo := client.getClientCredentialsLogin()
 	clientInfo.Expires = time.Now().Add(time.Second * time.Duration(clientInfo.ExpiresIn))
 	client.UserToken = clientInfo
+	fmt.Println(client.UserToken)
 	handleRequests()
 }

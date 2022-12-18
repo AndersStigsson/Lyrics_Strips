@@ -35,7 +35,8 @@ func validateRequest(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func getNextTrack(w http.ResponseWriter, r *http.Request) {
-	trackData := client.getTrackId()
+	values := r.URL.Query()
+	trackData := client.getTrackId(values)
 
 	numberOfSongs := len(trackData.Tracks)
 	songNumber := rand.Intn(numberOfSongs)

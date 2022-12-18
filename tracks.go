@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type Tracks struct {
@@ -18,8 +19,12 @@ type TrackData struct {
 	Tracks []Tracks `json:"tracks"`
 }
 
-func (sp *SpotifyData) getTrackId() *TrackData {
-	url := "https://api.spotify.com/v1/recommendations?seed_genres=swedish&limit=10&min_popularity=33"
+func (sp *SpotifyData) getTrackId(values url.Values) *TrackData {
+	genres := "swedish"
+	if values.Has("seed_genres") {
+		genres = values.Get("seed_genres")
+	}
+	url := fmt.Sprintf("https://api.spotify.com/v1/recommendations?seed_genres=%s&limit=10&min_popularity=33", genres)
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, url, nil)

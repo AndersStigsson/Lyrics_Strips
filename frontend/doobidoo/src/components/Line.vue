@@ -9,6 +9,8 @@ const emit = defineEmits(['guess'])
 const onkeyup = (evt) => {
     if (evt.code == 'Enter' || evt.code == 'Space') {
         emit('guess')
+    } else if (evt.code == 'KeyN') {
+        showMoreLines()
     }
 };
 
@@ -28,8 +30,9 @@ window.addEventListener('keyup', onkeyup);
     <div 
         class="text-2xl"
     >
-        <p
+        <div
             v-for="lineNumber in showLines"
+            class="text-white"
         >
             <div
                 v-if="lineNumber === 0"
@@ -40,21 +43,18 @@ window.addEventListener('keyup', onkeyup);
             <div>
                 {{ props.lines[lineNumber].words }}
             </div>
-        </p>
+        </div>
         <button
-            class="btn-xl"
+            class="btn-xl text-gray-400"
             @click="showMoreLines"
         >
             Show next line
         </button>
         <button 
-            class="btn-xl"
+            class="btn-xl text-gray-400"
             @click="$emit('guess')"
         >
             Guess
         </button>
     </div>
 </template>
-
-<style scoped>
-</style>
