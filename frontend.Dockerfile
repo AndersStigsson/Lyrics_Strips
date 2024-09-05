@@ -1,10 +1,10 @@
-FROM node:14-alpine
+FROM node:lts-alpine
 
 RUN yarn global add serve
 
 WORKDIR /app
 
-COPY ./frontend/doobidoo/package*.json ./
+COPY ./frontend/doobidoo/package.json ./
 COPY ./frontend/doobidoo/yarn.lock ./
 
 RUN yarn install
