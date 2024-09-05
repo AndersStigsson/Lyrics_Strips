@@ -11,7 +11,7 @@ const changedGenres = (evt) => {
 
 <template>
     <div>
-        <div class="w-52 mx-auto">
+        <div style="background-color: grey" class="w-52 mx-auto">
             <Dropdown 
                 :seed-genres="seedGenres"
                 @genre="changedGenres"
