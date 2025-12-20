@@ -3,7 +3,7 @@ import { reactive, ref, computed, toRefs, onMounted, watch } from 'vue';
 import axios from 'axios';
 import Line from './Line.vue';
 import TrackInfo from './TrackInfo.vue';
-import ExtraInfo from './ExtraInfo.vue';
+// import ExtraInfo from './ExtraInfo.vue';
 
 const props = defineProps(['seedGenres'])
 
