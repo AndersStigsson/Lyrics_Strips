@@ -73,7 +73,7 @@ onMounted(async () => {
 watch(
     () => props.seedGenres,
     () => {
-        totalTrack.value = 20;
+        totalTracks.value = 20;
         changedGenres.value;
     }
 )
