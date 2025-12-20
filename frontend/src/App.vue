@@ -2,7 +2,7 @@
 import {ref} from 'vue';
 import Track from './components/Track.vue';
 import Dropdown from './Dropdown.vue';
-let seedGenres = ref([]);
+let seedGenres = ref(["swedish"]);
 
 const changedGenres = (evt) => {
     seedGenres.value = evt
@@ -13,7 +13,6 @@ const changedGenres = (evt) => {
     <div>
         <div style="background-color: grey" class="w-52 mx-auto">
             <Dropdown 
-                :seed-genres="seedGenres"
                 @genre="changedGenres"
             />
         </div>

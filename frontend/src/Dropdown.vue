@@ -18,9 +18,6 @@ export default {
     components: {
         Multiselect,
     },
-    props: [
-        'seedGenres'
-    ],
     data() {
         return {
             value: ['swedish'],
