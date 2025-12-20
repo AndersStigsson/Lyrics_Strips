@@ -21,6 +21,7 @@ const error = ref(false);
 const loading = ref(false);
 const errorText = ref('');
 const totalTracks = ref(20);
+const changedGenres = ref(false);
 const nextSong = async (changeState) => {
     error.value = false;
     errorText.value = '';
@@ -41,7 +42,12 @@ const nextSong = async (changeState) => {
         }
         trackInfo.value = resp.data.track;
         lines.value = resp.data.lyrics;
-        totalTracks.value = resp.data.total;
+        if (resp.data.total > totalTracks.value || changedGenres.value) {
+            if (changedGenres.value) {
+                changedGenres.value = false;
+            }
+            totalTracks.value = resp.data.total;
+        }
         lineNumber.value = resp.data.lineNumber;
         line.value = lines.value[lineNumber.value];
     } catch (e) {
@@ -68,6 +74,7 @@ watch(
     () => props.seedGenres,
     () => {
         totalTrack.value = 20;
+        changedGenres.value;
     }
 )
 
