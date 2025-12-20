@@ -3,12 +3,12 @@ import { reactive, ref, computed, toRefs, onMounted, watch } from 'vue';
 import axios from 'axios';
 import Line from './Line.vue';
 import TrackInfo from './TrackInfo.vue';
+import ExtraInfo from './ExtraInfo.vue';
 
 const props = defineProps(['seedGenres'])
 
 
-const pageNumber = ref(0);
-const line = ref('');
+const line = ref({});
 const trackInfo = ref({});
 const state = reactive({guessing: true});
 const getUrl = () => {
@@ -17,21 +17,39 @@ const getUrl = () => {
 const lines = ref([]);
 const lineNumber = ref(0);
 const finished = ref(false);
+const error = ref(false);
+const loading = ref(false);
+const errorText = ref('');
+const totalTracks = ref(20);
 const nextSong = async (changeState) => {
-    const resp = await axios.post(`${import.meta.env.VITE_BACKEND_HOST}/search?page=${pageNumber.value+1}`,
-        {
-            values: props.seedGenres,
-            type: ''
-        }
-    )
-    pageNumber.value += 1;
-    trackInfo.value = resp.data.track;
-    lines.value = resp.data.lyrics;
-    lineNumber.value = resp.data.lineNumber;
-    line.value = lines.value[lineNumber.value].words;
+    error.value = false;
+    errorText.value = '';
+    loading.value = true;
     if (changeState) {
         clickedLine();
     }
+    try {
+
+        const resp = await axios.post(`${import.meta.env.VITE_BACKEND_HOST}/search?total=${totalTracks.value}`,
+            {
+                values: props.seedGenres,
+                type: ''
+            }
+        )
+        if (!resp.data.lyrics || !resp.data.track) {
+            throw new Error("Either lyrics or track not found")
+        }
+        trackInfo.value = resp.data.track;
+        lines.value = resp.data.lyrics;
+        totalTracks.value = resp.data.total;
+        lineNumber.value = resp.data.lineNumber;
+        line.value = lines.value[lineNumber.value];
+    } catch (e) {
+        console.error(e);
+        error.value = true;
+        errorText.value = e;
+    }
+    loading.value = false;
 }
 const clickedLine = () => {
     state.guessing = !state.guessing;
@@ -49,14 +67,39 @@ onMounted(async () => {
 watch(
     () => props.seedGenres,
     () => {
-        pageNumber.value = 0
+        totalTrack.value = 20;
     }
 )
+
+const lineTime = computed(() => {
+    if (line.value && line.value.time) {
+        return line.value.time.split('.')[0]
+    }
+    return '00:00';
+});
 
 </script>
 
 <template>
-    <div v-if="finished">
+    <div v-if="loading">
+        <div class="loading text-white">
+            Loading...
+        </div>
+    </div>
+    <div
+        v-else-if="error"
+    >
+        <div class="text-white">
+            {{ errorText }}
+        </div>
+        <button
+            class="btn-xl text-gray-400"
+            @click="nextSong(false)"
+        >
+            Get new
+        </button>
+    </div>
+    <div v-else-if="finished">
         <Line 
             v-if="state.guessing"
             :lines="lines"
@@ -68,10 +111,11 @@ watch(
             :trackInfo="trackInfo"
             @click="nextSong(true)"
         />
-    </div>
-    <div
-        v-else
-    >
-        Hej Hej
+
+        <!-- <ExtraInfo 
+            v-if="trackInfo"
+            :track="trackInfo"
+            :time="lineTime"
+/> -->
     </div>
 </template>

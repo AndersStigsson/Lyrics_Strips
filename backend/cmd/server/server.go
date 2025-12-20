@@ -25,6 +25,7 @@ type Server struct {
 	httpServer *http.Server
 
 	spotifyService *iSpotify.Service
+	ccConfig       *clientcredentials.Config
 }
 
 func NewServer(config ServerConfig, logger *slog.Logger) *Server {
@@ -51,7 +52,7 @@ func (s *Server) Start(ctx context.Context) {
 
 	httpClient := spotifyauth.New().Client(ctx, token)
 	client := spotify.New(httpClient)
-	s.spotifyService = iSpotify.NewSpotifyService(s.logger, client)
+	s.spotifyService = iSpotify.NewSpotifyService(s.logger, client, config)
 
 	s.serveHTTP()
 

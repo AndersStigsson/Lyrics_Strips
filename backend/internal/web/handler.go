@@ -82,16 +82,16 @@ func handleSearch(
 				return
 			}
 			vals := r.URL.Query()
-			page := 1
-			if p := vals.Get("page"); p != "" {
-				page, err = strconv.Atoi(p)
+			total := 200
+			if p := vals.Get("total"); p != "" {
+				total, err = strconv.Atoi(p)
 				if err != nil {
 					logger.Error("handleSearch", "err", err)
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 					return
 				}
 			}
-			res, err := service.HandleSearch(r.Context(), searchData, page)
+			res, err := service.HandleSearch(r.Context(), searchData, total)
 			if err != nil {
 				logger.Error("handleSearch", "err", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -101,6 +101,7 @@ func handleSearch(
 			var lyrics *iSpotify.LyricsLines
 			var track spotify.FullTrack
 			tracks := res.Tracks.Tracks
+			totalTracks := res.Tracks.Total
 
 			for {
 				rInt := rand.Intn(len(tracks) - 1)
@@ -132,6 +133,7 @@ func handleSearch(
 				"track":      track,
 				"lyrics":     lyrics.SyncedLyricsSlice,
 				"lineNumber": lineNumber,
+				"total":      totalTracks,
 			})
 		},
 	)
