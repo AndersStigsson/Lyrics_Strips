@@ -1,17 +1,20 @@
-FROM node:lts-alpine
+FROM node:24-alpine
 
-RUN yarn global add serve
+
+RUN yarn set version berry
 
 WORKDIR /app
 
-COPY ./package.json ./
-COPY ./yarn.lock ./
+COPY ./frontend/package.json ./
+COPY ./frontend/yarn.lock ./
+
+
+COPY ./frontend/ .
+COPY ./frontend/.env .
+
+RUN rm .yarnrc.yml
 
 RUN yarn install
-
-COPY ./ .
-COPY ./.env .
-
 RUN yarn build
 
 CMD ["yarn", "dlx", "serve", "-s", "dist", "-l", "tcp://0.0.0.0:10006" ]
