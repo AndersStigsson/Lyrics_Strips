@@ -14,3 +14,4 @@ services:
     ports:
       - "10011:10011"
     restart: unless-stopped
+    env_file: "./backend/.env"
