@@ -104,7 +104,10 @@ func handleSearch(
 			totalTracks := res.Tracks.Total
 
 			for {
-				rInt := rand.Intn(len(tracks) - 1)
+				rInt := 1
+				if len(tracks) > 1 {
+					rInt = rand.Intn(len(tracks) - 1)
+				}
 				track = tracks[rInt]
 				lyrics, err = service.GetLyrics(track)
 				if err != nil {
