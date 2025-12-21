@@ -104,7 +104,7 @@ func handleSearch(
 			totalTracks := res.Tracks.Total
 
 			for {
-				rInt := 1
+				rInt := 0
 				if len(tracks) > 1 {
 					rInt = rand.Intn(len(tracks) - 1)
 				}
