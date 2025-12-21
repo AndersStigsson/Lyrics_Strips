@@ -61,8 +61,12 @@ func (s *Service) HandleSearch(ctx context.Context, sd SearchData, total int) (*
 		query = "swedish"
 	}
 	offset := 0
-	if total > 19 {
-		offset = rand.Intn(total/10) * 10
+	if len(sd.Values) <= 2 {
+		offset = rand.Intn(100) * 10
+	} else {
+		if total > 19 {
+			offset = rand.Intn(total/10) * 10
+		}
 	}
 	res, err := s.client.Search(
 		ctx,
