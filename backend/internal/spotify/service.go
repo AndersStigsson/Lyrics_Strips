@@ -71,7 +71,6 @@ func (s *Service) HandleSearch(ctx context.Context, sd SearchData, total int) (*
 		spotify.Limit(10),
 		spotify.Offset(offset),
 	)
-	s.logger.Info("HandleSearch", "res", res.Tracks.Total)
 	if err != nil {
 		if err.Error() == "oauth2: token expired and refresh token is not set" {
 
